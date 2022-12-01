@@ -1,3 +1,7 @@
+from time import time
+
+startTime = time()
+
 def get_input():
     input = []
 
@@ -22,8 +26,10 @@ def organize_grocery_list(grocery_list):
     return organized_list
 
 if __name__ == "__main__":
+
     file_input = get_input()
     organized_grocery_list = organize_grocery_list(file_input)
 
     print(max(organized_grocery_list)) #part 1. Find the largest calorie consumer
-    print(sum(sorted(organized_grocery_list, reverse=True)[:3])) #part 2. Sum of 3 large calorie consumer
+    print(sum(sorted(organized_grocery_list, reverse=True)[:3])) #part 2. Sum of 3 largest calorie consumers
+    print(f'Execution Time: {time()-startTime}')
