@@ -3,7 +3,6 @@ from pathlib import Path
 
 filepath = Path(__file__).with_name('input.txt')
 
-
 '''
 Part 1
 ROCK: A, X
@@ -65,7 +64,7 @@ def play_game_part_1(strategy_guide):
 
     for strategy in strategy_guide:
         score += (OUTCOME_SCORING[ROUND_RESULTS[strategy]] \
-            + MOVE_SCORING[strategy.split(' ')[1]])
+            + MOVE_SCORING[strategy[-1]])
 
     return score
 
@@ -73,14 +72,13 @@ def play_game_part_2(strategy_guide):
     score = 0
 
     for strategy in strategy_guide:
-        round_score = (OUTCOME_SCORING[ROUND_RESULTS[CHEAT_SHEET_RULES[strategy]]] \
-            + MOVE_SCORING[CHEAT_SHEET_RULES[strategy].split(' ')[1]])
-
-        score += round_score
+        score += (OUTCOME_SCORING[ROUND_RESULTS[CHEAT_SHEET_RULES[strategy]]] \
+            + MOVE_SCORING[CHEAT_SHEET_RULES[strategy][-1]])
 
     return score
 
 if __name__ == "__main__":
+    
     file_input = get_input()
     part_1_outcome = play_game_part_1(file_input)
     part_2_outcome = play_game_part_2(file_input)
