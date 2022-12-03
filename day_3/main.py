@@ -1,0 +1,52 @@
+'''Coding Challenge from https://adventofcode.com/2022/day/3'''
+from pathlib import Path
+
+filepath = Path(__file__).with_name('input.txt')
+
+def get_input():
+
+    with filepath.open('r', encoding='utf-8') as file:
+        file_input =  [line.rstrip('\n') for line in file]
+
+    return file_input
+
+def part_1(rucksacks):
+    priority_score = 0
+
+    for mixed_rucksack in rucksacks:
+        rucksack_1 = mixed_rucksack[0:int(len(mixed_rucksack)/2)]
+        rucksack_2 = mixed_rucksack[int(len(mixed_rucksack)/2):]
+
+        common_items = list(set(rucksack_1) & set(rucksack_2))
+
+        if common_items[0].isupper():
+            priority_score+=ord(common_items[0])-38
+        else:
+            priority_score+=ord(common_items[0])-96
+
+    return priority_score
+
+def part_2(rucksacks):
+    priority_score = 0
+
+    for i in range(0, len(rucksacks), 3):
+        rucksack_1 = rucksacks[i]
+        rucksack_2 = rucksacks[i+1]
+        rucksack_3 = rucksacks[i+2]
+        
+        common_items = list(set(rucksack_1) & set(rucksack_2) & set(rucksack_3))
+
+        if common_items[0].isupper():
+            priority_score+=ord(common_items[0])-38
+        else:
+            priority_score+=ord(common_items[0])-96
+
+    return priority_score
+
+if __name__ == '__main__':
+    file_input = get_input()
+    part_1_priority_score = part_1(file_input)
+    part_2_priority_score = part_2(file_input)
+    
+    print(part_1_priority_score)
+    print(part_2_priority_score)

@@ -78,10 +78,11 @@ def play_game_part_2(strategy_guide):
     return score
 
 if __name__ == "__main__":
-    
+
     file_input = get_input()
     part_1_outcome = play_game_part_1(file_input)
     part_2_outcome = play_game_part_2(file_input)
 
     print(part_1_outcome)
     print(part_2_outcome)
+    
