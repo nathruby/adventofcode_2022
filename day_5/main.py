@@ -28,10 +28,9 @@ def part_1(move_operations):
     for move_operation in move_operations:
         operations = move_operation.split(' ')
 
-        for _ in range(int(operations[1])):
-
-            crate = stacks[int(operations[3])-1].pop()
-            stacks[int(operations[5])-1].append(crate)
+        removed_crates = stacks[int(operations[3])-1][-int(operations[1]):]
+        del stacks[int(operations[3])-1][-int(operations[1]):]
+        stacks[int(operations[5])-1] += removed_crates[::-1]
 
 
     return ''.join([stack[-1] for stack in stacks])
@@ -55,21 +54,21 @@ def part_2(move_operations):
 
         removed_crates = stacks[int(operations[3])-1][-int(operations[1]):]
         del stacks[int(operations[3])-1][-int(operations[1]):]
-        stacks[int(operations[5])-1] = stacks[int(operations[5])-1] + removed_crates
+        stacks[int(operations[5])-1] += removed_crates
 
     return ''.join([stack[-1] if len(stack) > 0 else '' for stack in stacks])
 
 if __name__ == '__main__':
-    file_input = get_input()
-    part_1_results = part_1(file_input)
-    part_2_results = part_2(file_input)
+    # file_input = get_input()
+    # part_1_results = part_1(file_input)
+    # part_2_results = part_2(file_input)
 
-    print(part_1_results)
-    print(part_2_results)
+    # print(part_1_results)
+    # print(part_2_results)
 
-#     statement= '''
-# file_input = get_input()
-# part_1_results = part_1(file_input)
-# part_2_results = part_2(file_input)
-# '''
-#     print(timeit.timeit(stmt=statement, globals=globals(), number=1000))
+    statement= '''
+file_input = get_input()
+part_1_results = part_1(file_input)
+part_2_results = part_2(file_input)
+'''
+    print(timeit.timeit(stmt=statement, globals=globals(), number=1000))
