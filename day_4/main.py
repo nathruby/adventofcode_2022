@@ -20,8 +20,8 @@ def part_1(assignment_pairs):
         group_1_range = [ int(value) for value in assignment_pair[0].split('-')]
         group_2_range = [ int(value) for value in assignment_pair[1].split('-')]
 
-        if (group_2_range[0] <= group_1_range[0] and group_1_range[1] <= group_2_range[1])\
-            or (group_1_range[0] <= group_2_range[0] and group_2_range[1] <= group_1_range[1]):
+        if (group_2_range[0] <= group_1_range[0] <= group_1_range[1] <= group_2_range[1])\
+            or (group_1_range[0] <= group_2_range[0] <= group_2_range[1] <= group_1_range[1]):
             total_subsets+=1
 
     return total_subsets
@@ -34,10 +34,7 @@ def part_2(assignment_pairs):
         group_1_range = [ int(value) for value in assignment_pair[0].split('-')]
         group_2_range = [ int(value) for value in assignment_pair[1].split('-')]
 
-        if (group_2_range[0] <= group_1_range[0] and group_1_range[0] <= group_2_range[1])\
-            or (group_2_range[0] <= group_1_range[1] and group_1_range[1] <= group_2_range[1])\
-            or (group_1_range[0] <= group_2_range[0] and group_2_range[0] <= group_1_range[1])\
-            or (group_1_range[0] <= group_2_range[1] and group_2_range[1] <= group_1_range[1]):
+        if max(group_1_range[0],group_2_range[0]) <= min(group_1_range[1],group_2_range[1]):
             total_intersects+=1
 
     return total_intersects
