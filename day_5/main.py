@@ -3,17 +3,6 @@ from pathlib import Path
 import timeit
 
 filepath = Path(__file__).with_name('input.txt')
-stacks = [
-    ['G', 'T', 'R', 'W'],
-    ['G', 'C', 'H', 'P', 'M', 'S', 'V', 'W'],
-    ['C', 'L', 'T', 'S', 'G', 'M'],
-    ['J', 'H', 'D', 'M', 'W', 'R', 'F'],
-    ['P', 'Q', 'L', 'H', 'S', 'W', 'F', 'J'],
-    ['P', 'J', 'D', 'N', 'F', 'M', 'S'],
-    ['Z', 'B', 'D', 'F', 'G', 'C', 'S', 'J'],
-    ['R', 'T', 'B', 'W'],
-    ['H', 'N', 'W', 'L', 'C'],
-]
 
 def get_input():
 
