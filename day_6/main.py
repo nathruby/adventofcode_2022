@@ -1,4 +1,4 @@
-'''Coding Challenge from https://adventofcode.com/2022/day/4'''
+'''Coding Challenge from https://adventofcode.com/2022/day/6'''
 from pathlib import Path
 import timeit
 
@@ -25,8 +25,8 @@ def find_starting_marker(input_stream, distinct_values):
 
 if __name__ == '__main__':
     file_input = get_input()
-    part_1_results = find_starting_marker(file_input, 4)
-    part_2_results = find_starting_marker(file_input, 14)
+    part_1_results = find_starting_marker(file_input, 4) #Part 1: End of Packet
+    part_2_results = find_starting_marker(file_input, 14) #Part 2: End of Message
 
     print(part_1_results)
     print(part_2_results)
