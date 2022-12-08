@@ -1,8 +1,39 @@
-'''Coding Challenge from https://adventofcode.com/2022/day/4'''
+'''Coding Challenge from https://adventofcode.com/2022/day/7'''
 from pathlib import Path
 import timeit
 
 filepath = Path(__file__).with_name('input.txt')
+
+class Directory():
+
+    name: str
+    parent: str
+    directories: dict
+    files: dict
+    total_size: int
+
+    def __init__(self, name, parent) -> None:
+        self.name = name
+        self.parent = parent
+        self.directories = {}
+        self.files = {}
+        self.total_size = None
+
+    def add_dir(self, name):
+        self.directories[name] = Directory(name,self)
+
+    def add_file(self, name, size):
+        self.files[name] = size
+
+    def size(self):
+        if self.total_size is None:
+            self.total_size = sum(self.files.values()) \
+                + sum( [directory.size() for directory in self.directories.values()] )
+
+        return self.total_size
+
+    def __str__(self) -> str:
+        return f'Name: {self.name}, Size: {self.size()}'
 
 def get_input():
 
@@ -13,85 +44,88 @@ def get_input():
 
 def create_directory(command_input):
 
-    directory_tree: dict = {
-        '/': []
-    }
+    root: Directory = Directory('/', None)
 
-    current_directory = ''
+    current_directory: Directory = root
 
     for command in command_input:
 
-        if command[2:] == 'cd /':
-            current_directory = command[5:]
+        if command == '$ cd /':
+            current_directory = root
             continue
 
-        if command[2:] == 'cd ..':
-            current_directory = '/'.join(current_directory.split('/')[:-1])
+        if command == '$ cd ..':
+            current_directory = current_directory.parent
             continue
 
         if command[2:4] == 'cd':
-            current_directory = f'{current_directory}/{command[5:]}'
+            current_directory = current_directory.directories[command[5:]]
             continue
 
-        if command[2:4] == 'ls':
+        if command == '$ ls':
             continue
 
-        if command[0:3] == 'dir':
+        if command.startswith('dir'):
 
-            if command[4:] not in directory_tree:
-                directory_path = f'{current_directory}/{command[4:]}'
-                directory_tree[directory_path] = []
+            current_directory.add_dir(command[4:])
             continue
 
         else:
-            file = command.split(' ')
-            directory_tree[current_directory].append({'file_name': file[1], 'file_size': int(file[0])})
-            
-    return directory_tree
+            file = command.split( )
+            current_directory.add_file(file[1], int(file[0]))
 
-def part_1(directory):
+    return root
 
-    total_directory_size_dict = {}
+def part_1(root: Directory, max_file_size: int):
 
-    for directory_path, contents in directory.items():
+    directory_path: list[Directory] = [root]
+    total: int = 0
 
-        total_directory_size = 0
+    while len(directory_path) > 0:
+        current_directory: Directory = directory_path[0]
 
-        for file in contents:
-            total_directory_size+=file['file_size']
+        if current_directory.size() <= max_file_size:
+            total += current_directory.size()
 
-        total_directory_size_dict[directory_path] = total_directory_size
+        directory_path.extend(current_directory.directories.values())
 
-    for file_directory in total_directory_size_dict:
-        for file_directory_key, directory_size in total_directory_size_dict.items():
-            if file_directory in file_directory_key and file_directory != file_directory_key:
-                total_directory_size_dict[file_directory]+=directory_size
+        directory_path = directory_path[1:]
 
-    return total_directory_size_dict
+    return total
 
-def part_2(total_directory_size_dict, min_space_required, total_space_available):
+def part_2(root: Directory, min_space_required: int, total_space_available: int):
 
-    directory_delete_candidates = []
-    space_available = total_space_available-total_directory_size_dict['/']
-    
-    for directory_path, size in total_directory_size_dict.items():
-        if space_available+size >= min_space_required:
-            directory_delete_candidates.append({'directory': directory_path, 'file_size': size})
-    
-    return min(directory_delete_candidates, key=lambda directory:directory['file_size'])
+    directory_path: list[Directory] = [root]
+    space_available: int = total_space_available-root.size()
+    delete_candidates: list[Directory] = []
+
+    while len(directory_path) > 0:
+        current_directory: Directory = directory_path[0]
+
+        if space_available+current_directory.size() >= min_space_required:
+            delete_candidates.append(current_directory)
+
+        directory_path.extend(current_directory.directories.values())
+
+        directory_path = directory_path[1:]
+
+    return min(delete_candidates, key=lambda directory:directory.size())
 
 if __name__ == '__main__':
     file_input = get_input()
-    directory = create_directory(file_input)
+    directory_root = create_directory(file_input)
 
-    part_1_results = part_1(directory)
-    part_2_results = part_2(part_1_results, 30000000, 70000000)
+    part_1_results = part_1(directory_root, 100*1000)
+    part_2_results = part_2(directory_root, 30*1000*1000, 70*1000*1000)
 
-    print(sum([directory_size if directory_size <= 100000 else 0 for _,directory_size in part_1_results.items()]))
+    print(part_1_results)
     print(part_2_results)
+
 #     statement= '''
 # file_input = get_input()
-# part_1_results = part_1(file_input)
-# part_2_results = part_2(file_input)
+# directory_root = create_directory(file_input)
+
+# part_1_results = part_1(directory_root, 100*1000)
+# part_2_results = part_2(directory_root, 30*1000*1000, 70*1000*1000)
 # '''
 #     print(timeit.timeit(stmt=statement, globals=globals(), number=1000))
