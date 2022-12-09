@@ -59,19 +59,15 @@ def part_2(tree_layout):
 
             #4 directions to check height
             #North
-            #if tree_height > max(transposed_tree_layout[column_index][:row_index],default=-1):
             north = len(take_until(tree_height, reversed(transposed_tree_layout[column_index][:row_index])))
-                
+
             #South
-            #if tree_height > max(transposed_tree_layout[column_index][row_index+1:],default=-1):
             south = len(take_until(tree_height, transposed_tree_layout[column_index][row_index+1:]))
-                
+
             #East
-            #if tree_height > max(tree_row[column_index+1:],default=-1):
             east = len(take_until(tree_height, tree_row[column_index+1:]))
-                
+
             #West
-            #if tree_height > max(tree_row[:column_index],default=-1):
             west = len(take_until(tree_height, reversed(tree_row[:column_index])))
 
             scenic_scores.append(north*south*east*west)
