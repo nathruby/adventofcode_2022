@@ -1,9 +1,10 @@
 '''Coding Challenge from https://adventofcode.com/2022/day/9'''
 from pathlib import Path
 import timeit
-from itertools import takewhile
+from time import sleep
 
 filepath = Path(__file__).with_name('input.txt')
+PRINT_MODE = False
 
 class Knot():
     x = 0
@@ -65,55 +66,63 @@ def part_1(head_pathing):
 
 def part_2(head_pathing):
 
-    tail_point_visits = set()
-    head = Knot(0,0)
-    tails = [Knot(0,0) for _ in range(9)]
-    tail_point_visits.add(tails[0].get_coordinates())
+    if PRINT_MODE: print('\n'.join([''.join(['.' for _ in range(-100,101)]) for _ in range(-50,51)]))
+
+    tail_points_visited = set()
+    knots = [Knot(0,0) for _ in range(10)]
+    tail_points_visited.add(knots[-1].get_coordinates())
+
+    if PRINT_MODE: print_rope_moving(knots, tail_points_visited)
 
     for head_move in head_pathing:
         direction, move = head_move.split(' ')
 
         if direction == 'U':
             for _ in range(0, int(move)):
-                head.y+=1 #move head
-                move_tail(head, tails[0])
+                knots[0].y+=1 #move head
+                move_tail(knots[0], knots[1])
 
-                for tail_index in range(0,len(tails)-1):
-                    move_tail(tails[tail_index],tails[tail_index+1])
+                for tail_index in range(1,len(knots)-1):
+                    move_tail(knots[tail_index],knots[tail_index+1])
 
-                tail_point_visits.add(tails[-1].get_coordinates())
+                tail_points_visited.add(knots[-1].get_coordinates())
+                if PRINT_MODE: print_rope_moving(knots, tail_points_visited)
 
         if direction == 'D':
             for _ in range(0, int(move)):
-                head.y-=1 #move head
-                move_tail(head, tails[0])
+                knots[0].y-=1 #move head
+                move_tail(knots[0], knots[1])
 
-                for tail_index in range(0,len(tails)-1):
-                    move_tail(tails[tail_index],tails[tail_index+1])
+                for tail_index in range(1,len(knots)-1):
+                    move_tail(knots[tail_index],knots[tail_index+1])
 
-                tail_point_visits.add(tails[-1].get_coordinates())
+                tail_points_visited.add(knots[-1].get_coordinates())
+                if PRINT_MODE: print_rope_moving(knots, tail_points_visited)
 
         if direction == 'L':
             for _ in range(0, int(move)):
-                head.x-=1 #move head
-                move_tail(head, tails[0])
+                knots[0].x-=1 #move head
+                move_tail(knots[0], knots[1])
 
-                for tail_index in range(0,len(tails)-1):
-                    move_tail(tails[tail_index],tails[tail_index+1])
+                for tail_index in range(1,len(knots)-1):
+                    move_tail(knots[tail_index],knots[tail_index+1])
 
-                tail_point_visits.add(tails[-1].get_coordinates())
+                tail_points_visited.add(knots[-1].get_coordinates())
+                if PRINT_MODE: print_rope_moving(knots, tail_points_visited)
 
         if direction == 'R':
             for _ in range(0, int(move)):
-                head.x+=1 #move head
-                move_tail(head, tails[0])
+                knots[0].x+=1 #move head
+                move_tail(knots[0], knots[1])
 
-                for tail_index in range(0,len(tails)-1):
-                    move_tail(tails[tail_index],tails[tail_index+1])
+                for tail_index in range(1,len(knots)-1):
+                    move_tail(knots[tail_index],knots[tail_index+1])
 
-                tail_point_visits.add(tails[-1].get_coordinates())
+                tail_points_visited.add(knots[-1].get_coordinates())
+                if PRINT_MODE: print_rope_moving(knots, tail_points_visited)
 
-    return len(tail_point_visits)
+    if PRINT_MODE: print_rope_moving(knots, tail_points_visited, True)
+    return len(tail_points_visited)
 
 def move_tail(head: Knot, tail: Knot):
 
@@ -151,6 +160,46 @@ def move_tail(head: Knot, tail: Knot):
             tail.y+=1
         elif delta_y < 0:
             tail.y-=1
+
+def print_rope_moving(knots: list[Knot], tail_points_visited: set[Knot], is_complete: bool=False):
+    sleep(0.1)
+    print_grid = []
+
+    for y in range(50, -51, -1):
+        row = []
+        for x in range(-100, 101):
+            column = '.'
+            if (x,y) in tail_points_visited:
+                column = '#'
+
+            if not is_complete:
+                if x == knots[9].x and y == knots[9].y:
+                    column = '9'
+                if x == knots[8].x and y == knots[8].y:
+                    column = '8'
+                if x == knots[7].x and y == knots[7].y:
+                    column = '7'
+                if x == knots[6].x and y == knots[6].y:
+                    column = '6'
+                if x == knots[5].x and y == knots[5].y:
+                    column = '5'
+                if x == knots[4].x and y == knots[4].y:
+                    column = '4'
+                if x == knots[3].x and y == knots[3].y:
+                    column = '3'
+                if x == knots[2].x and y == knots[2].y:
+                    column = '2'
+                if x == knots[1].x and y == knots[1].y:
+                    column = '1'
+                if x == knots[0].x and y == knots[0].y:
+                    column = 'H'
+
+            row.append(column)
+
+        print_grid.append(row)
+
+    print('\033c')
+    print('\n'.join([''.join(row) for row in print_grid]))
 
 if __name__ == '__main__':
     file_input = get_input()
