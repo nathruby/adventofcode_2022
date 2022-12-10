@@ -1,7 +1,7 @@
 '''Coding Challenge from https://adventofcode.com/2022/day/9'''
 from pathlib import Path
-import timeit
 from time import sleep
+import timeit
 
 filepath = Path(__file__).with_name('input.txt')
 PRINT_MODE = False
@@ -67,7 +67,7 @@ def part_1(head_pathing):
 def part_2(head_pathing):
 
     if PRINT_MODE: print('\n'.join([''.join(['.' for _ in range(-100,101)]) for _ in range(-50,51)]))
-
+    
     tail_points_visited = set()
     knots = [Knot(0,0) for _ in range(10)]
     tail_points_visited.add(knots[-1].get_coordinates())
@@ -129,37 +129,17 @@ def move_tail(head: Knot, tail: Knot):
     delta_x = head.x - tail.x
     delta_y = head.y - tail.y
 
-    #Tail moves up
-    if delta_y > 1:
-        tail.y+=1
-        if delta_x > 0:
-            tail.x+=1
-        elif delta_x < 0:
-            tail.x-=1
+    #Tail moves up or down
+    if abs(delta_y) > 1:
+        tail.y+=delta_y//2
+        if abs(delta_x) > 0:
+            tail.x+=delta_x//abs(delta_x)*1
 
-    #Tail moves down
-    elif delta_y < -1:
-        tail.y-=1
-        if delta_x > 0:
-            tail.x+=1
-        elif delta_x < 0:
-            tail.x-=1
-
-    #Tail moves left
-    elif delta_x < -1:
-        tail.x-=1
-        if delta_y > 0:
-            tail.y+=1
-        elif delta_y < 0:
-            tail.y-=1
-
-    #Tail moves right
-    elif delta_x > 1:
-        tail.x+=1
-        if delta_y > 0:
-            tail.y+=1
-        elif delta_y < 0:
-            tail.y-=1
+    #Tail moves left or right
+    elif abs(delta_x) > 1:
+        tail.x+=delta_x//2
+        if abs(delta_y) > 0:
+            tail.y+=delta_y//abs(delta_y)*1
 
 def print_rope_moving(knots: list[Knot], tail_points_visited: set[Knot], is_complete: bool=False):
     sleep(0.1)
