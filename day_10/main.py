@@ -1,9 +1,10 @@
 '''Coding Challenge from https://adventofcode.com/2022/day/10'''
 from pathlib import Path
 from time import sleep
+
 import timeit
 
-ANIMATE_MODE = True
+ANIMATE_MODE = False
 
 filepath = Path(__file__).with_name('input.txt')
 
@@ -43,7 +44,6 @@ def part_1(operations):
     return sum(signal_strengths)
 
 def part_2(operations):
-
     register_x = 1
     cycle = 1
     current_crt_row = ''
@@ -70,12 +70,15 @@ def part_2(operations):
             else:
                 current_crt_row+='.'
 
-            if ANIMATE_MODE:
-                print_solution(register_x, sprite_display)
 
             if cycle%40 == 0:
                 sprite_display[(cycle//40)-1] = current_crt_row
                 current_crt_row=''
+            else:
+                sprite_display[cycle//40] = current_crt_row + '.'*(40 - len(current_crt_row))
+
+            if ANIMATE_MODE:
+                print_solution(register_x, sprite_display)
 
             #End of a cycle
             cycle+=1

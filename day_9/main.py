@@ -5,6 +5,7 @@ import timeit
 
 filepath = Path(__file__).with_name('input.txt')
 PRINT_MODE = False
+ANIMATE_MODE = False
 
 class Knot():
     x = 0
@@ -57,14 +58,14 @@ def part_1(head_pathing):
 
 def part_2(head_pathing):
 
-    if PRINT_MODE:
+    if ANIMATE_MODE:
         print('\n'.join([''.join(['.' for _ in range(-100,101)]) for _ in range(-50,51)]))
 
     tail_points_visited = set()
     knots = [Knot(0,0) for _ in range(10)]
     tail_points_visited.add(knots[-1].get_coordinates())
 
-    if PRINT_MODE:
+    if ANIMATE_MODE:
         print_rope_moving(knots, tail_points_visited)
 
     for head_move in head_pathing:
@@ -85,10 +86,10 @@ def part_2(head_pathing):
                 move_tail(knots[tail_index],knots[tail_index+1])
 
             tail_points_visited.add(knots[-1].get_coordinates())
-            if PRINT_MODE:
+            if ANIMATE_MODE:
                 print_rope_moving(knots, tail_points_visited)
 
-    if PRINT_MODE:
+    if PRINT_MODE or ANIMATE_MODE:
         print_rope_moving(knots, tail_points_visited, True)
 
     return len(tail_points_visited)
@@ -102,13 +103,13 @@ def move_tail(head: Knot, tail: Knot):
     if abs(delta_y) > 1:
         tail.y+=delta_y//2
         if abs(delta_x) > 0:
-            tail.x+=delta_x//abs(delta_x)*1
+            tail.x+=delta_x//abs(delta_x)
 
     #Tail moves left or right
     elif abs(delta_x) > 1:
         tail.x+=delta_x//2
         if abs(delta_y) > 0:
-            tail.y+=delta_y//abs(delta_y)*1
+            tail.y+=delta_y//abs(delta_y)
 
 def print_rope_moving(knots: list[Knot], tail_points_visited: set[Knot], is_complete: bool=False):
     sleep(0.1)
