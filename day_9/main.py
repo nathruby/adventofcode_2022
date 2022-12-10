@@ -29,99 +29,68 @@ def get_input():
 
 def part_1(head_pathing):
 
-    tail_point_visits = set()
+    tail_points_visited = set()
     head = Knot(0,0)
     tail = Knot(0,0)
 
-    tail_point_visits.add(tail.get_coordinates())
+    tail_points_visited.add(tail.get_coordinates())
 
     for head_move in head_pathing:
         direction, move = head_move.split(' ')
 
-        if direction == 'U':
-            for _ in range(0, int(move)):
+        for _ in range(int(move)):
+
+            if direction == 'U':
                 head.y+=1 #move head
-                move_tail(head, tail)
-                tail_point_visits.add(tail.get_coordinates())
-
-        if direction == 'D':
-            for _ in range(0, int(move)):
+            elif direction == 'D':
                 head.y-=1 #move head
-                move_tail(head, tail)
-                tail_point_visits.add(tail.get_coordinates())
-
-        if direction == 'L':
-            for _ in range(0, int(move)):
+            elif direction == 'L':
                 head.x-=1 #move head
-                move_tail(head, tail)
-                tail_point_visits.add(tail.get_coordinates())
-
-        if direction == 'R':
-            for _ in range(0, int(move)):
+            elif direction == 'R':
                 head.x+=1 #move head
-                move_tail(head, tail)
-                tail_point_visits.add(tail.get_coordinates())
 
-    return len(tail_point_visits)
+            move_tail(head,tail)
+
+            tail_points_visited.add(tail.get_coordinates())
+
+    return len(tail_points_visited)
 
 def part_2(head_pathing):
 
-    if PRINT_MODE: print('\n'.join([''.join(['.' for _ in range(-100,101)]) for _ in range(-50,51)]))
-    
+    if PRINT_MODE:
+        print('\n'.join([''.join(['.' for _ in range(-100,101)]) for _ in range(-50,51)]))
+
     tail_points_visited = set()
     knots = [Knot(0,0) for _ in range(10)]
     tail_points_visited.add(knots[-1].get_coordinates())
 
-    if PRINT_MODE: print_rope_moving(knots, tail_points_visited)
+    if PRINT_MODE:
+        print_rope_moving(knots, tail_points_visited)
 
     for head_move in head_pathing:
         direction, move = head_move.split(' ')
 
-        if direction == 'U':
-            for _ in range(0, int(move)):
+        for _ in range(int(move)):
+
+            if direction == 'U':
                 knots[0].y+=1 #move head
-                move_tail(knots[0], knots[1])
-
-                for tail_index in range(1,len(knots)-1):
-                    move_tail(knots[tail_index],knots[tail_index+1])
-
-                tail_points_visited.add(knots[-1].get_coordinates())
-                if PRINT_MODE: print_rope_moving(knots, tail_points_visited)
-
-        if direction == 'D':
-            for _ in range(0, int(move)):
+            elif direction == 'D':
                 knots[0].y-=1 #move head
-                move_tail(knots[0], knots[1])
-
-                for tail_index in range(1,len(knots)-1):
-                    move_tail(knots[tail_index],knots[tail_index+1])
-
-                tail_points_visited.add(knots[-1].get_coordinates())
-                if PRINT_MODE: print_rope_moving(knots, tail_points_visited)
-
-        if direction == 'L':
-            for _ in range(0, int(move)):
+            elif direction == 'L':
                 knots[0].x-=1 #move head
-                move_tail(knots[0], knots[1])
-
-                for tail_index in range(1,len(knots)-1):
-                    move_tail(knots[tail_index],knots[tail_index+1])
-
-                tail_points_visited.add(knots[-1].get_coordinates())
-                if PRINT_MODE: print_rope_moving(knots, tail_points_visited)
-
-        if direction == 'R':
-            for _ in range(0, int(move)):
+            elif direction == 'R':
                 knots[0].x+=1 #move head
-                move_tail(knots[0], knots[1])
 
-                for tail_index in range(1,len(knots)-1):
-                    move_tail(knots[tail_index],knots[tail_index+1])
+            for tail_index in range(0,len(knots)-1):
+                move_tail(knots[tail_index],knots[tail_index+1])
 
-                tail_points_visited.add(knots[-1].get_coordinates())
-                if PRINT_MODE: print_rope_moving(knots, tail_points_visited)
+            tail_points_visited.add(knots[-1].get_coordinates())
+            if PRINT_MODE:
+                print_rope_moving(knots, tail_points_visited)
 
-    if PRINT_MODE: print_rope_moving(knots, tail_points_visited, True)
+    if PRINT_MODE:
+        print_rope_moving(knots, tail_points_visited, True)
+
     return len(tail_points_visited)
 
 def move_tail(head: Knot, tail: Knot):
