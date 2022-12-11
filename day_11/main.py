@@ -3,93 +3,67 @@ from pathlib import Path
 from copy import deepcopy
 from functools import reduce
 from time import sleep
-
 import timeit
 
 filepath = Path(__file__).with_name('input.txt')
+BATCH_SIZE = 7
+
+class Operation():
+    left_side:str
+    right_side:str
+    operator:str
+
+    def __init__(self, operation_string:str) -> None:
+
+        operation_list = operation_string.split(' ')
+        self.left_side = operation_list[2]
+        self.right_side = operation_list[4]
+        self.operator = operation_list[3]
+
+class Monkey():
+    worry_levels:list[int]
+    operation: Operation
+    test:int
+    monkey_if_true:int
+    monkey_if_false:int
+    inspected_items:int = 0
+
+    def __init__(self, monkey_details:list[list[str]]) -> None:
+        self.worry_levels = [int(worry_level.strip()) \
+            for worry_level in monkey_details[1].lstrip('Starting items:').split(',')]
+
+        self.operation = Operation(monkey_details[2].lstrip('Operation:').strip())
+        self.test = int(monkey_details[3].split(' ')[-1])
+        self.monkey_if_true = int(monkey_details[4].split(' ')[-1])
+        self.monkey_if_false = int(monkey_details[5].split(' ')[-1])
 
 def get_input():
 
+    monkeys:list[Monkey] = []
+    batch:list[str] = []
+
     with filepath.open('r', encoding='utf-8') as file:
-        file_input =  [line.rstrip('\n') for line in file]
+        for line in file:
+            batch.append(line.rstrip('\n').strip())
 
-    return file_input
+            if len(batch) >= BATCH_SIZE:
+                monkeys.append(Monkey(batch))
+                batch = []
 
-def part_1(head_pathing):
+    monkeys.append(Monkey(batch))
+    return monkeys
 
-    monkeys:list = [
-        {
-            'levels': [89, 95, 92, 64, 87, 68],
-            'operation': 'old * 11',
-            'test': 2,
-            'if_true': 7,
-            'if_false': 4,
-            'inspected_items': 0
-        },
-        {
-            'levels': [87, 67],
-            'operation': 'old + 1',
-            'test': 13,
-            'if_true': 3,
-            'if_false': 6,
-            'inspected_items': 0
-        },
-        {
-            'levels': [95, 79, 92, 82, 60],
-            'operation': 'old + 6',
-            'test': 3,
-            'if_true': 1,
-            'if_false': 6,
-            'inspected_items': 0
-        },
-        {
-            'levels': [67, 97, 56],
-            'operation': 'old * old',
-            'test': 17,
-            'if_true': 7,
-            'if_false': 0,
-            'inspected_items': 0
-        },
-        {
-            'levels': [80, 68, 87, 94, 61, 59, 50, 68],
-            'operation': 'old * 7',
-            'test': 19,
-            'if_true': 5,
-            'if_false': 2,
-            'inspected_items': 0
-        },
-        {
-            'levels': [73, 51, 76, 59],
-            'operation': 'old + 8',
-            'test': 7,
-            'if_true': 2,
-            'if_false': 1,
-            'inspected_items': 0
-        },
-        {
-            'levels': [92],
-            'operation': 'old + 5',
-            'test': 11,
-            'if_true': 3,
-            'if_false': 0,
-            'inspected_items': 0
-        },
-        {
-            'levels': [99, 76, 78, 76, 79, 90, 89],
-            'operation': 'old + 7',
-            'test': 5,
-            'if_true': 4,
-            'if_false': 5,
-            'inspected_items': 0
-        }
-    ]
+def part_1(monkey_input):
 
+    monkeys:list[Monkey] = deepcopy(monkey_input)
     max_rounds: int = 20
 
     for _ in range(max_rounds):
+
+        monkey:Monkey
         for monkey in monkeys:
 
-            worry_levels = deepcopy(monkey['levels'])
+            worry_levels = deepcopy(monkey.worry_levels)
 
             for worry_level in worry_levels:
 
@@ -97,122 +71,54 @@ def part_1(head_pathing):
                 left_side: int
                 right_side: int
 
-                equation = monkey['operation'].split(' ')
-
-                if equation[0] == 'old':
+                if monkey.operation.left_side == 'old':
                     left_side = worry_level
                 else:
-                    left_side = int(equation[0])
+                    left_side = int(monkey.operation.left_side)
 
-                if equation[2] == 'old':
+                if monkey.operation.right_side == 'old':
                     right_side = worry_level
                 else:
-                    right_side = int(equation[2])
+                    right_side = int(monkey.operation.right_side)
 
-                if equation[1] == '+':
-                    monkey['levels'][0] = left_side + right_side
+                if monkey.operation.operator == '+':
+                    monkey.worry_levels[0]  = left_side + right_side
                 else:
-                    monkey['levels'][0] = left_side * right_side
+                    monkey.worry_levels[0]  = left_side * right_side
 
                 #adjust monkey boredom
-                monkey['levels'][0]//=3
+                monkey.worry_levels[0]//=3
 
                 #test where to throw
                 #true
-                if monkey['levels'][0] % monkey['test'] == 0:
-                    monkeys[monkey['if_true']]['levels'].append(monkey['levels'][0])
+                if monkey.worry_levels[0] % monkey.test == 0:
+                    monkeys[monkey.monkey_if_true].worry_levels.append(monkey.worry_levels[0])
                 #false
                 else:
-                    monkeys[monkey['if_false']]['levels'].append(monkey['levels'][0])
+                    monkeys[monkey.monkey_if_false].worry_levels.append(monkey.worry_levels[0])
 
-                del monkey['levels'][0]
-                monkey['inspected_items']+=1
+                del monkey.worry_levels[0]
+                monkey.inspected_items+=1
 
-    results = sorted([monkey['inspected_items'] for monkey in monkeys], reverse=True)[:2]
+    results = sorted([monkey.inspected_items for monkey in monkeys], reverse=True)[:2]
     monkey_business: int = 1
 
     for result in results:
         monkey_business*=result
     return monkey_business
 
-def part_2(head_pathing):
-    
-    monkeys:list = [
-        {
-            'levels': [89, 95, 92, 64, 87, 68],
-            'operation': 'old * 11',
-            'test': 2,
-            'if_true': 7,
-            'if_false': 4,
-            'inspected_items': 0
-        },
-        {
-            'levels': [87, 67],
-            'operation': 'old + 1',
-            'test': 13,
-            'if_true': 3,
-            'if_false': 6,
-            'inspected_items': 0
-        },
-        {
-            'levels': [95, 79, 92, 82, 60],
-            'operation': 'old + 6',
-            'test': 3,
-            'if_true': 1,
-            'if_false': 6,
-            'inspected_items': 0
-        },
-        {
-            'levels': [67, 97, 56],
-            'operation': 'old * old',
-            'test': 17,
-            'if_true': 7,
-            'if_false': 0,
-            'inspected_items': 0
-        },
-        {
-            'levels': [80, 68, 87, 94, 61, 59, 50, 68],
-            'operation': 'old * 7',
-            'test': 19,
-            'if_true': 5,
-            'if_false': 2,
-            'inspected_items': 0
-        },
-        {
-            'levels': [73, 51, 76, 59],
-            'operation': 'old + 8',
-            'test': 7,
-            'if_true': 2,
-            'if_false': 1,
-            'inspected_items': 0
-        },
-        {
-            'levels': [92],
-            'operation': 'old + 5',
-            'test': 11,
-            'if_true': 3,
-            'if_false': 0,
-            'inspected_items': 0
-        },
-        {
-            'levels': [99, 76, 78, 76, 79, 90, 89],
-            'operation': 'old + 7',
-            'test': 5,
-            'if_true': 4,
-            'if_false': 5,
-            'inspected_items': 0
-        }
-    ]
+def part_2(monkey_input):
 
-    worry_cap = reduce(lambda x, y: x*y, [monkey['test'] for monkey in monkeys])
-
+    monkeys:list[Monkey] = deepcopy(monkey_input)
     max_rounds: int = 10*1000
+    worry_cap = reduce(lambda x, y: x*y, [monkey.test for monkey in monkeys])
 
     for _ in range(max_rounds):
 
+        monkey:Monkey
         for monkey in monkeys:
 
-            worry_levels = deepcopy(monkey['levels'])
+            worry_levels = deepcopy(monkey.worry_levels)
 
             for worry_level in worry_levels:
 
@@ -220,45 +126,40 @@ def part_2(head_pathing):
                 left_side: int
                 right_side: int
 
-                equation = monkey['operation'].split(' ')
-
-                if equation[0] == 'old':
+                if monkey.operation.left_side == 'old':
                     left_side = worry_level
                 else:
-                    left_side = int(equation[0])
+                    left_side = int(monkey.operation.left_side)
 
-                if equation[2] == 'old':
+                if monkey.operation.right_side == 'old':
                     right_side = worry_level
                 else:
-                    right_side = int(equation[2])
+                    right_side = int(monkey.operation.right_side)
 
-                if equation[1] == '+':
-                    monkey['levels'][0] = left_side + right_side
+                if monkey.operation.operator == '+':
+                    monkey.worry_levels[0]  = left_side + right_side
                 else:
-                    monkey['levels'][0] = left_side * right_side
+                    monkey.worry_levels[0]  = left_side * right_side
 
-                #Cap the worry that satisfies all monkeys
-                monkey['levels'][0]%=worry_cap
+                #adjust monkey boredom
+                monkey.worry_levels[0]%=worry_cap
 
                 #test where to throw
                 #true
-                if monkey['levels'][0] % monkey['test'] == 0:
-                    #Cap the worry that satisfies all monkeys
-                    monkeys[monkey['if_true']]['levels'].append(monkey['levels'][0])
+                if monkey.worry_levels[0] % monkey.test == 0:
+                    monkeys[monkey.monkey_if_true].worry_levels.append(monkey.worry_levels[0])
                 #false
                 else:
-                    monkeys[monkey['if_false']]['levels'].append(monkey['levels'][0])
+                    monkeys[monkey.monkey_if_false].worry_levels.append(monkey.worry_levels[0])
 
-                del monkey['levels'][0]
-                monkey['inspected_items']+=1
+                del monkey.worry_levels[0]
+                monkey.inspected_items+=1
 
-    print([monkey['inspected_items'] for monkey in monkeys])
-    results = sorted([monkey['inspected_items'] for monkey in monkeys], reverse=True)[:2]
+    results = sorted([monkey.inspected_items for monkey in monkeys], reverse=True)[:2]
     monkey_business: int = 1
 
     for result in results:
         monkey_business*=result
-
     return monkey_business
 
 if __name__ == '__main__':
