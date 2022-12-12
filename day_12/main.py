@@ -147,6 +147,7 @@ if __name__ == '__main__':
 
     print(part_1_results)
     print(part_2_results)
+
 #     statement= '''
 # file_input = get_input()
 # part_1_results = part_1(file_input)
