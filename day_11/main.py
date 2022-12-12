@@ -8,6 +8,11 @@ import timeit
 filepath = Path(__file__).with_name('input.txt')
 BATCH_SIZE = 7
 
+OPERATORS = {
+    '+': lambda x,y: x + y,
+    '*': lambda x,y: x * y
+}
+
 class Operation():
     left_side:str
     right_side:str
@@ -20,6 +25,12 @@ class Operation():
         self.right_side = operation_list[4]
         self.operator = operation_list[3]
 
+    def inspect(self, worry_level) -> int:
+
+        left_side: int = worry_level if self.left_side == 'old' else int(self.left_side)
+        right_side: int = worry_level if self.right_side == 'old' else int(self.right_side)
+        return OPERATORS[self.operator](left_side,right_side)
+
 class Monkey():
     worry_levels:list[int]
     operation: Operation
@@ -29,9 +40,9 @@ class Monkey():
     inspected_items:int = 0
 
     def __init__(self, monkey_details:list[list[str]]) -> None:
+
         self.worry_levels = [int(worry_level.strip()) \
             for worry_level in monkey_details[1].lstrip('Starting items:').split(',')]
-
         self.operation = Operation(monkey_details[2].lstrip('Operation:').strip())
         self.test = int(monkey_details[3].split(' ')[-1])
         self.monkey_if_true = int(monkey_details[4].split(' ')[-1])
@@ -68,34 +79,18 @@ def part_1(monkey_input):
             for worry_level in worry_levels:
 
                 #adjust worry state
-                left_side: int
-                right_side: int
-
-                if monkey.operation.left_side == 'old':
-                    left_side = worry_level
-                else:
-                    left_side = int(monkey.operation.left_side)
-
-                if monkey.operation.right_side == 'old':
-                    right_side = worry_level
-                else:
-                    right_side = int(monkey.operation.right_side)
-
-                if monkey.operation.operator == '+':
-                    monkey.worry_levels[0]  = left_side + right_side
-                else:
-                    monkey.worry_levels[0]  = left_side * right_side
+                new_worry: int = monkey.operation.inspect(worry_level)
 
                 #adjust monkey boredom
-                monkey.worry_levels[0]//=3
+                new_worry//=3
 
                 #test where to throw
                 #true
-                if monkey.worry_levels[0] % monkey.test == 0:
-                    monkeys[monkey.monkey_if_true].worry_levels.append(monkey.worry_levels[0])
+                if new_worry % monkey.test == 0:
+                    monkeys[monkey.monkey_if_true].worry_levels.append(new_worry)
                 #false
                 else:
-                    monkeys[monkey.monkey_if_false].worry_levels.append(monkey.worry_levels[0])
+                    monkeys[monkey.monkey_if_false].worry_levels.append(new_worry)
 
                 del monkey.worry_levels[0]
                 monkey.inspected_items+=1
@@ -110,7 +105,7 @@ def part_1(monkey_input):
 def part_2(monkey_input):
 
     monkeys:list[Monkey] = deepcopy(monkey_input)
-    max_rounds: int = 10*1000
+    max_rounds: int = 10_000
     worry_cap = reduce(lambda x, y: x*y, [monkey.test for monkey in monkeys])
 
     for _ in range(max_rounds):
@@ -123,34 +118,18 @@ def part_2(monkey_input):
             for worry_level in worry_levels:
 
                 #adjust worry state
-                left_side: int
-                right_side: int
+                new_worry: int = monkey.operation.inspect(worry_level)
 
-                if monkey.operation.left_side == 'old':
-                    left_side = worry_level
-                else:
-                    left_side = int(monkey.operation.left_side)
-
-                if monkey.operation.right_side == 'old':
-                    right_side = worry_level
-                else:
-                    right_side = int(monkey.operation.right_side)
-
-                if monkey.operation.operator == '+':
-                    monkey.worry_levels[0]  = left_side + right_side
-                else:
-                    monkey.worry_levels[0]  = left_side * right_side
-
-                #adjust monkey boredom
-                monkey.worry_levels[0]%=worry_cap
+                #keep the worry levels under the maximum needed to satisfy all monkeys
+                new_worry%=worry_cap
 
                 #test where to throw
                 #true
-                if monkey.worry_levels[0] % monkey.test == 0:
-                    monkeys[monkey.monkey_if_true].worry_levels.append(monkey.worry_levels[0])
+                if new_worry % monkey.test == 0:
+                    monkeys[monkey.monkey_if_true].worry_levels.append(new_worry)
                 #false
                 else:
-                    monkeys[monkey.monkey_if_false].worry_levels.append(monkey.worry_levels[0])
+                    monkeys[monkey.monkey_if_false].worry_levels.append(new_worry)
 
                 del monkey.worry_levels[0]
                 monkey.inspected_items+=1
@@ -174,4 +153,4 @@ if __name__ == '__main__':
 # part_1_results = part_1(file_input)
 # part_2_results = part_2(file_input)
 # '''
-#     print(timeit.timeit(stmt=statement, globals=globals(), number=1000))
+#     print(timeit.timeit(stmt=statement, globals=globals(), number=100))
