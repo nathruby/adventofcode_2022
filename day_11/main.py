@@ -2,7 +2,6 @@
 from pathlib import Path
 from copy import deepcopy
 from functools import reduce
-from time import sleep
 import timeit
 
 filepath = Path(__file__).with_name('input.txt')
@@ -136,7 +135,6 @@ def part_2(monkey_input):
 
     results = sorted([monkey.inspected_items for monkey in monkeys], reverse=True)[:2]
     monkey_business: int = 1
-
     for result in results:
         monkey_business*=result
     return monkey_business
