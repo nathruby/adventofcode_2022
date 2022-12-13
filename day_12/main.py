@@ -17,8 +17,8 @@ class Terrain():
     start:Point
     destination:Point
     moves:list[int]
-    part_2:bool = False
     visited_map:list[str]
+    part_2:bool = False
 
     def __init__(self, data, width) -> None:
         self.height_map = data
