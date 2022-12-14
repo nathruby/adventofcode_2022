@@ -62,28 +62,29 @@ def part_1(rock_formations):
     while not sand_falling_forever:
 
         sand_placed = False
-        x_offset = 0
-        y_offset = 0
+        sand_location = list(sand_source)
 
         while not sand_placed and not sand_falling_forever:
 
             #Sand falls deeper than the deepest rock
-            if y_offset >= max_depth:
+            if sand_location[1] >= max_depth:
                 sand_falling_forever = True
             #Still air, keep falling
-            elif (sand_source[0]+x_offset, sand_source[1]+y_offset+1) not in cave_map:
-                y_offset+=1
+            if (sand_location[0], sand_location[1]+1) not in cave_map:
+                sand_location[1]+=1
             #Fall until hit rock or sand
             else:
                 #check if it can drop down left
-                if (sand_source[0]+x_offset-1, sand_source[1]+y_offset+1) not in cave_map:
-                    x_offset-=1
+                if (sand_location[0]-1, sand_location[1]+1) not in cave_map:
+                    sand_location[0]-=1
+                    sand_location[1]+=1
                 #check if it can drop down right
-                elif (sand_source[0]+x_offset+1, sand_source[1]+y_offset+1) not in cave_map:
-                    x_offset+=1
+                elif (sand_location[0]+1, sand_location[1]+1) not in cave_map:
+                    sand_location[0]+=1
+                    sand_location[1]+=1
                 #cannot settle anywhere else
                 else:
-                    cave_map[(sand_source[0]+x_offset, sand_source[1]+y_offset)] = 'o'
+                    cave_map[(sand_location[0], sand_location[1])] = 'o'
                     sand_placed = True
                     number_of_sand_placed+=1
 
@@ -106,31 +107,31 @@ def part_2(rock_formation):
     while not sand_blocked:
 
         sand_placed = False
-        x_offset = 0
-        y_offset = 0
+        sand_location = list(sand_source)
 
         while not sand_placed and not sand_blocked:
 
             #Still air, keep falling
-            if (sand_source[0]+x_offset, sand_source[1]+y_offset+1) not in cave_map:
-                y_offset+=1
+            if (sand_location[0], sand_location[1]+1) not in cave_map:
+                sand_location[1]+=1
             #Fall until hit rock or sand
             else:
                 #check if it can drop down left
-                if (sand_source[0]+x_offset-1, sand_source[1]+y_offset+1) not in cave_map:
-                    x_offset-=1
-                    
+                if (sand_location[0]-1, sand_location[1]+1) not in cave_map:
+                    sand_location[0]-=1
+                    sand_location[1]+=1
                 #check if it can drop down right
-                elif (sand_source[0]+x_offset+1, sand_source[1]+y_offset+1) not in cave_map:
-                    x_offset+=1
+                elif (sand_location[0]+1, sand_location[1]+1) not in cave_map:
+                    sand_location[0]+=1
+                    sand_location[1]+=1
                 #check if covering the hole
-                elif (sand_source[0]+x_offset, sand_source[1]+y_offset) == sand_source:
+                elif (sand_location[0], sand_location[1]) == sand_source:
                     number_of_sand_placed+=1
                     sand_blocked = True
                     sand_placed = True
                 #cannot settle anywhere else
                 else:
-                    cave_map[(sand_source[0]+x_offset, sand_source[1]+y_offset)] = 'o'
+                    cave_map[(sand_location[0], sand_location[1])] = 'o'
                     sand_placed = True
                     number_of_sand_placed+=1
 
