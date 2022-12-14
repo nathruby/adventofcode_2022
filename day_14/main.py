@@ -9,7 +9,7 @@ def create_cave_map(rock_formations) -> dict:
     cave_map = {}
 
     #Draw Sand Source
-    cave_map['500 0'] = '+'
+    cave_map[(500,0)] = '+'
 
     #Draw Rocks
     for rock_formation_directions in rock_formations:
@@ -23,22 +23,22 @@ def create_cave_map(rock_formations) -> dict:
                 offset = start[0] - end[0]
 
                 for offset_x in range(offset+1):
-                    cave_map[f'{start[0]-offset_x} {start[1]}'] = '#'
+                    cave_map[(start[0]-offset_x, start[1])] = '#'
             elif start[0] < end[0]:
                 offset = end[0]-start[0]
 
                 for offset_x in range(offset+1):
-                    cave_map[f'{start[0]+offset_x} {start[1]}'] = '#'
+                    cave_map[(start[0]+offset_x, start[1])] = '#'
             elif start[1] > end[1]:
                 offset = start[1] - end[1]
 
                 for offset_y in range(offset+1):
-                    cave_map[f'{start[0]} {start[1]-offset_y}'] = '#'
+                    cave_map[(start[0], start[1]-offset_y)] = '#'
             elif start[1] < end[1]:
                 offset = end[1]-start[1]
 
                 for offset_y in range(offset+1):
-                    cave_map[f'{start[0]} {start[1]+offset_y}'] = '#'
+                    cave_map[(start[0], start[1]+offset_y)] = '#'
 
     return cave_map
 
@@ -51,7 +51,8 @@ def get_input():
 
 def part_1(rock_formations):
     cave_map = create_cave_map(rock_formations)
-    max_depth = max( int(key.split(' ')[1]) for key in cave_map)
+
+    max_depth = max(key[1] for key in cave_map)
 
     sand_source = (500,0)
     sand_falling_forever = False
@@ -70,19 +71,19 @@ def part_1(rock_formations):
             if y_offset >= max_depth:
                 sand_falling_forever = True
             #Still air, keep falling
-            elif f'{sand_source[0]+x_offset} {sand_source[1]+y_offset+1}' not in cave_map:
+            elif (sand_source[0]+x_offset, sand_source[1]+y_offset+1) not in cave_map:
                 y_offset+=1
             #Fall until hit rock or sand
             else:
                 #check if it can drop down left
-                if f'{sand_source[0]+x_offset-1} {sand_source[1]+y_offset+1}' not in cave_map:
+                if (sand_source[0]+x_offset-1, sand_source[1]+y_offset+1) not in cave_map:
                     x_offset-=1
                 #check if it can drop down right
-                elif f'{sand_source[0]+x_offset+1} {sand_source[1]+y_offset+1}' not in cave_map:
+                elif (sand_source[0]+x_offset+1, sand_source[1]+y_offset+1) not in cave_map:
                     x_offset+=1
                 #cannot settle anywhere else
                 else:
-                    cave_map[f'{sand_source[0]+x_offset} {sand_source[1]+y_offset}'] = 'o'
+                    cave_map[(sand_source[0]+x_offset, sand_source[1]+y_offset)] = 'o'
                     sand_placed = True
                     number_of_sand_placed+=1
 
@@ -91,7 +92,7 @@ def part_1(rock_formations):
 def part_2(rock_formation):
 
     cave_map = create_cave_map(rock_formation)
-    max_depth = max( int(key.split(' ')[1]) for key in cave_map)+2
+    max_depth = max( key[1] for key in cave_map)+2
 
     sand_source = (500,0)
     sand_blocked = False
@@ -99,7 +100,7 @@ def part_2(rock_formation):
 
     #Draw Floor
     for x in range(-9999,10000):
-        cave_map[f'{x} {max_depth}'] = '#'
+        cave_map[(x, max_depth)] = '#'
 
     #Draw Sand
     while not sand_blocked:
@@ -111,23 +112,25 @@ def part_2(rock_formation):
         while not sand_placed and not sand_blocked:
 
             #Still air, keep falling
-            if f'{sand_source[0]+x_offset} {sand_source[1]+y_offset+1}' not in cave_map:
+            if (sand_source[0]+x_offset, sand_source[1]+y_offset+1) not in cave_map:
                 y_offset+=1
             #Fall until hit rock or sand
             else:
                 #check if it can drop down left
-                if f'{sand_source[0]+x_offset-1} {sand_source[1]+y_offset+1}' not in cave_map:
+                if (sand_source[0]+x_offset-1, sand_source[1]+y_offset+1) not in cave_map:
                     x_offset-=1
+                    
                 #check if it can drop down right
-                elif f'{sand_source[0]+x_offset+1} {sand_source[1]+y_offset+1}' not in cave_map:
+                elif (sand_source[0]+x_offset+1, sand_source[1]+y_offset+1) not in cave_map:
                     x_offset+=1
-                #cannot settle anywhere else
+                #check if covering the hole
                 elif (sand_source[0]+x_offset, sand_source[1]+y_offset) == sand_source:
                     number_of_sand_placed+=1
                     sand_blocked = True
                     sand_placed = True
+                #cannot settle anywhere else
                 else:
-                    cave_map[f'{sand_source[0]+x_offset} {sand_source[1]+y_offset}'] = 'o'
+                    cave_map[(sand_source[0]+x_offset, sand_source[1]+y_offset)] = 'o'
                     sand_placed = True
                     number_of_sand_placed+=1
 
