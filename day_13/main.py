@@ -1,9 +1,12 @@
-'''Coding Challenge from https://adventofcode.com/2022/day/12'''
+'''Coding Challenge from https://adventofcode.com/2022/day/13'''
 from pathlib import Path
 from time import sleep
 from itertools import zip_longest
 from functools import cmp_to_key
+from json import loads
 import timeit
+
+#TODO COME BACK TO TRY CLOSURE INSTEAD OF RECURSION
 
 filepath = Path(__file__).with_name('input.txt')
 BATCH_SIZE:int = 3
@@ -64,8 +67,8 @@ def part_1(packet_input):
 
     pairs_in_right_order:list[int] = []
     for index,packet_pair in enumerate(packet_pairs):
-        left = eval(packet_pair[0])
-        right = eval(packet_pair[1])
+        left = loads(packet_pair[0])
+        right = loads(packet_pair[1])
 
         if compare_if_ordered(left, right):
             pairs_in_right_order.append(index+1)
@@ -74,7 +77,7 @@ def part_1(packet_input):
 
 def part_2(packet_input):
 
-    part_two_packet_set:list[str] = [eval(packet) for packet in packet_input if packet != '']
+    part_two_packet_set:list[str] = [loads(packet) for packet in packet_input if packet != '']
     part_two_packet_set.append([[2]])
     part_two_packet_set.append([[6]])
 
@@ -91,6 +94,7 @@ if __name__ == '__main__':
     part_1_results = part_1(file_input)
     part_2_results = part_2(file_input)
 
+    #6272,22288
     print(part_1_results)
     print(part_2_results)
 
