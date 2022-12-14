@@ -5,6 +5,13 @@ import timeit
 
 filepath = Path(__file__).with_name('input.txt')
 
+def get_input():
+
+    with filepath.open('r', encoding='utf-8') as file:
+        file_input = [line.rstrip('\n') for line in file]
+
+    return file_input
+
 def create_cave_map(rock_formations) -> dict:
     cave_map = {}
 
@@ -42,12 +49,19 @@ def create_cave_map(rock_formations) -> dict:
 
     return cave_map
 
-def get_input():
+def print_cave_map(cave_map):
 
-    with filepath.open('r', encoding='utf-8') as file:
-        file_input = [line.rstrip('\n').strip() for line in file]
+    print('\033c')
+    min_x = min(key[0] for key in cave_map)
+    max_x = max(key[0] for key in cave_map)
+    min_y = min(key[1] for key in cave_map)
+    max_y = max(key[1] for key in cave_map)
 
-    return file_input
+    graphical_map = [[cave_map[(x,y)] if (x,y) in cave_map \
+        else ' ' for x in range(min_x,max_x+1)] for y in range(min_y, max_y+1)]
+
+    sleep(0.2)
+    print('\n'.join(''.join(row) for row in graphical_map))
 
 def part_1(rock_formations):
     cave_map = create_cave_map(rock_formations)
@@ -64,11 +78,12 @@ def part_1(rock_formations):
         sand_placed = False
         sand_location = list(sand_source)
 
-        while not sand_placed and not sand_falling_forever:
+        while not sand_placed:
 
             #Sand falls deeper than the deepest rock
             if sand_location[1] >= max_depth:
                 sand_falling_forever = True
+                sand_placed = True
             #Still air, keep falling
             if (sand_location[0], sand_location[1]+1) not in cave_map:
                 sand_location[1]+=1
@@ -93,6 +108,8 @@ def part_1(rock_formations):
 def part_2(rock_formation):
 
     cave_map = create_cave_map(rock_formation)
+    min_x = min(key[0] for key in cave_map)-200
+    max_x = max(key[0] for key in cave_map)+200
     max_depth = max( key[1] for key in cave_map)+2
 
     sand_source = (500,0)
@@ -100,7 +117,7 @@ def part_2(rock_formation):
     number_of_sand_placed = 0
 
     #Draw Floor
-    for x in range(-9999,10000):
+    for x in range(min_x,max_x+1):
         cave_map[(x, max_depth)] = '#'
 
     #Draw Sand
@@ -109,7 +126,7 @@ def part_2(rock_formation):
         sand_placed = False
         sand_location = list(sand_source)
 
-        while not sand_placed and not sand_blocked:
+        while not sand_placed:
 
             #Still air, keep falling
             if (sand_location[0], sand_location[1]+1) not in cave_map:
