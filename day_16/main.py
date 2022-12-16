@@ -1,4 +1,4 @@
-'''Coding Challenge from https://adventofcode.com/2022/day/15'''
+'''Coding Challenge from https://adventofcode.com/2022/day/16'''
 from pathlib import Path
 from time import sleep
 import timeit
